@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Yo Tube Music</string>
+    <string-array name="artists_array">
+        <item>Artist1</item>
+        <item>Artist2</item>
+        <item>Artist3</item>
+        <item>Artist4</item>
+        <item>Artist5</item>
+        <item>Artist6</item>
+        <item>Artist7</item>
+        <item>Artist8</item>
+    </string-array>
+    <string-array name="genres_array">
+        <item>Genre1</item>
+        <item>Genre2</item>
+        <item>Genre3</item>
+        <item>Genre4</item>
+        <item>Genre5</item>
+        <item>Genre6</item>
+        <item>Genre7</item>
+        <item>Genre8</item>
+    </string-array>
+</resources>
