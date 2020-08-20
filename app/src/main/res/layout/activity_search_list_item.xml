@@ -23,9 +23,20 @@
         android:layout_marginStart="8dp"
         android:hint="Artist Name"
         android:text="Some Artist Name"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewSongName" />
+
+    <TextView
+        android:id="@+id/textViewGere"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:hint="Genre"
+        android:text="Genre"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewArtist" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

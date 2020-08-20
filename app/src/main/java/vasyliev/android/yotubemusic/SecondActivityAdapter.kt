@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_search_list_item.view.*
 import vasyliev.android.yotubemusic.db.YoTubeSongData
 
-class SecondActivityAdapter(var yoTubeMusicData: List<YoTubeSongData>, context: Context) :
+class SecondActivityAdapter(private var yoTubeMusicData: List<YoTubeSongData>, context: Context) :
     RecyclerView.Adapter<SecondActivityAdapter.ViewHolder>() {
     private var context: Context? = null
     private var inflater: LayoutInflater
@@ -43,7 +43,8 @@ class SecondActivityAdapter(var yoTubeMusicData: List<YoTubeSongData>, context: 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
         private lateinit var yoTubeSong: YoTubeSongData
         private val songNameTextView: TextView = itemView.textViewSongName
-        private val artistsName: TextView = itemView.textViewArtist
+        private val artistsNameTextView: TextView = itemView.textViewArtist
+        private val genreTextView: TextView = itemView.textViewGere
 
         init {
             itemView.setOnClickListener(this)
@@ -52,7 +53,8 @@ class SecondActivityAdapter(var yoTubeMusicData: List<YoTubeSongData>, context: 
         fun bind(yoTubeSong: YoTubeSongData) {
             this.yoTubeSong = yoTubeSong
             songNameTextView.text = this.yoTubeSong.songName
-            artistsName.text = this.yoTubeSong.artistsName
+            artistsNameTextView.text = this.yoTubeSong.artistsName
+            genreTextView.text = this.yoTubeSong.genre
         }
 
         override fun onClick(v: View?) {
