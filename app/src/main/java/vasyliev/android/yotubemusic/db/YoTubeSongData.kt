@@ -10,5 +10,5 @@ data class YoTubeSongData(
     var songName: String = "",
     var artistsName: String = "",
     var genre: String = "",
-    var filePath: String = ""
+    var filePath: Int? = null
 )

@@ -23,6 +23,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".MainActivityService"
+            android:enabled="true" >
+        </service>
     </application>
 
 </manifest>

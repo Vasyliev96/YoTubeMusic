@@ -12,7 +12,7 @@ object YoRepository {
 
     private lateinit var yoTubeDB: YoTubeDB
     private lateinit var yoTubeDAO: YoTubeDAO
-    //private val executor = Executors.newSingleThreadExecutor()
+    private val executor = Executors.newSingleThreadExecutor()
 
     fun initialize(context: Context) {
         yoTubeDB = Room.databaseBuilder(
@@ -36,11 +36,11 @@ object YoRepository {
         genre: String,
         artistName: String
     ): LiveData<List<YoTubeSongData>> = yoTubeDAO.getSongsByGenreAndArtist(genre, artistName)
-/*
+
     fun addSong(user: YoTubeSongData) {
         executor.execute {
             yoTubeDAO.addSong(user)
         }
     }
-    */
+
 }

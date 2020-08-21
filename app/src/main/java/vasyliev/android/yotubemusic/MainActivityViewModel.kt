@@ -10,6 +10,7 @@ import java.util.*
 
 class MainActivityViewModel : ViewModel() {
     private val songIdLiveData = MutableLiveData<UUID>()
+    var currentSongFilepath: Int? = null
     var songLiveData: LiveData<YoTubeSongData?> =
         Transformations.switchMap(songIdLiveData) { songId ->
             YoRepository.getSong(songId)

@@ -21,20 +21,13 @@ class SecondActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
         "Author 1",
         "Author 2",
         "Author 3",
-        "Author 4",
-        "Author 5",
-        "Author 6",
+        "Author 4"
     )
     private val genres: Array<String?> = arrayOf(
         "Genres",
         "Genre 1",
         "Genre 2",
-        "Genre 3",
-        "Genre 4",
-        "Genre 5",
-        "Genre 6",
-        "Genre 7",
-        "Genre 8",
+        "Genre 3"
     )
 
     private lateinit var secondActivityAdapter: SecondActivityAdapter
@@ -47,7 +40,7 @@ class SecondActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
         setSpinner()
-        //secondActivityViewModel.loadMusic(assets)
+        //secondActivityViewModel.loadMusic()
 
         yoTubeMusicRecyclerView = findViewById(R.id.recyclerViewYoTubeMusic)
         yoTubeMusicRecyclerView.layoutManager = LinearLayoutManager(this)
