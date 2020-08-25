@@ -6,13 +6,19 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Binder
 import android.os.IBinder
+import android.widget.Toast
 
 private const val EXTRA_SONG_TO_PLAY = "vasyliev.android.yotubemusic.song_to_play"
+private const val PREF_DEFAULT_SONG_TIME = "prefDefSongTime"
 
 class MainActivityService : Service() {
     private var songFile: Int? = null
     var myPlayer: MediaPlayer? = null
     override fun onBind(intent: Intent?): IBinder? {
+        getSharedPreferences(PREF_DEFAULT_SONG_TIME, MODE_PRIVATE).edit().apply {
+            putInt("songTime", myPlayer!!.currentPosition)
+            apply()
+        }
         myPlayer!!.pause()
         return Binder()
     }
@@ -31,12 +37,22 @@ class MainActivityService : Service() {
     }
 
     override fun onStart(intent: Intent?, startid: Int) {
+        val defSongTime = getSharedPreferences(PREF_DEFAULT_SONG_TIME, MODE_PRIVATE)
+        val defSongSeekTo = defSongTime.getInt("songTime", 0)
         if (intent != null) {
             songFile = intent.getIntExtra(EXTRA_SONG_TO_PLAY, 0)
         }
         myPlayer = MediaPlayer.create(this, songFile!!)
+        myPlayer!!.seekTo(defSongSeekTo)
         myPlayer!!.isLooping = false
         myPlayer!!.start()
+        myPlayer!!.setOnCompletionListener {
+            stopSelf()
+        }
+    }
+
+    fun getMediaPlayerCurrentPosition(): Int {
+        return myPlayer!!.currentPosition
     }
 
     override fun onDestroy() {

@@ -1,5 +1,6 @@
 package vasyliev.android.yotubemusic
 
+import android.annotation.SuppressLint
 import android.content.*
 import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
@@ -10,6 +11,9 @@ import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.activity_main.*
 import vasyliev.android.yotubemusic.db.YoTubeSongData
 import java.util.*
+
+private const val PREF_DEFAULT_SONG = "prefDefSong"
+private const val PREF_DEFAULT_SONG_TIME = "prefDefSongTime"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var songData: YoTubeSongData
@@ -23,18 +27,17 @@ class MainActivity : AppCompatActivity() {
         override fun onReceive(context: Context, intent: Intent) {
             val songId: UUID = UUID.fromString(intent.getStringExtra(SecondActivity.SONG_ID))
             mainActivityViewModel.loadSong(songId)
-            Toast.makeText(
-                this@MainActivity,
-                "Got a broadcast: ${mainActivityViewModel.songLiveData.value?.filePath}",
-                Toast.LENGTH_SHORT
-            )
-                .show()
             stopService(Intent(this@MainActivity, MainActivityService::class.java))
+            nullifyPrefTime()
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val defSong = getSharedPreferences(PREF_DEFAULT_SONG, MODE_PRIVATE)
+        val defSongFile = defSong.getString("songFile", null)
+        if (defSongFile != null)
+            mainActivityViewModel.loadSong(UUID.fromString(defSongFile))
         setContentView(R.layout.activity_main)
         songData = YoTubeSongData()
         mainActivityViewModel.songLiveData.observe(
@@ -114,11 +117,30 @@ class MainActivity : AppCompatActivity() {
         }
         buttonStopMusic.setOnClickListener {
             stopService(Intent(this, MainActivityService::class.java))
+            nullifyPrefTime()
+        }
+    }
+
+    fun nullifyPrefTime(){
+        getSharedPreferences(PREF_DEFAULT_SONG_TIME, MODE_PRIVATE).edit().apply {
+            putInt("songTime", 0)
+            apply()
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        bindService(
+            Intent(this, MainActivityService::class.java),
+            serviceConnection!!,
+            0
+        )
+        stopService(Intent(this, MainActivityService::class.java))
+        val defSongPref = getSharedPreferences(PREF_DEFAULT_SONG, MODE_PRIVATE)
+        defSongPref.edit().apply {
+            putString("songFile", mainActivityViewModel.songLiveData.value?.id.toString())
+            apply()
+        }
         this.unregisterReceiver(onShowNotification)
     }
 }

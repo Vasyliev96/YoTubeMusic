@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_search.*
 import vasyliev.android.yotubemusic.db.YoTubeSongData
 
+private const val PREF_FIRST_TIME = "isAppFirstTimeLaunched"
 
 class SecondActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
     SecondActivityAdapter.CallbackItemClickListener {
@@ -40,7 +41,14 @@ class SecondActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
         setSpinner()
-        //secondActivityViewModel.loadMusic()
+        val defSong = getSharedPreferences(PREF_FIRST_TIME, MODE_PRIVATE)
+        if (defSong.getBoolean("booleanFirstTime", true)) {
+            secondActivityViewModel.loadMusic()
+            getSharedPreferences(PREF_FIRST_TIME, MODE_PRIVATE).edit().apply {
+                putBoolean("booleanFirstTime", false)
+                apply()
+            }
+        }
 
         yoTubeMusicRecyclerView = findViewById(R.id.recyclerViewYoTubeMusic)
         yoTubeMusicRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -70,7 +78,7 @@ class SecondActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
                     secondActivityViewModel.currentArtist =
                         parent.getItemAtPosition(position).toString()
                 }
-                resetObserver()
+                updateObserver()
             } else {
                 if (position == 0) {
                     secondActivityViewModel.currentGenre = null
@@ -78,7 +86,7 @@ class SecondActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
                     secondActivityViewModel.currentGenre =
                         parent.getItemAtPosition(position).toString()
                 }
-                resetObserver()
+                updateObserver()
             }
         }
     }
@@ -101,7 +109,7 @@ class SecondActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
         onBackPressed()
     }
 
-    private fun resetObserver() {
+    private fun updateObserver() {
         secondActivityViewModel.requestMusic()
         secondActivityViewModel.songListLiveData.removeObservers(this)
         secondActivityViewModel.songListLiveData.observe(
