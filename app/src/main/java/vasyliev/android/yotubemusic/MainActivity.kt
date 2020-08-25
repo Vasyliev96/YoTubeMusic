@@ -16,6 +16,7 @@ private const val PREF_DEFAULT_SONG = "prefDefSong"
 private const val PREF_DEFAULT_SONG_TIME = "prefDefSongTime"
 
 class MainActivity : AppCompatActivity() {
+    
     private lateinit var songData: YoTubeSongData
     private var serviceConnection: ServiceConnection? = null
     private var bound = false
