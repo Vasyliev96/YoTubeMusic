@@ -1,8 +1,6 @@
 package vasyliev.android.yotubemusic
 
-import android.annotation.SuppressLint
 import android.content.*
-import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
@@ -16,7 +14,7 @@ private const val PREF_DEFAULT_SONG = "prefDefSong"
 private const val PREF_DEFAULT_SONG_TIME = "prefDefSongTime"
 
 class MainActivity : AppCompatActivity() {
-    
+
     private lateinit var songData: YoTubeSongData
     private var serviceConnection: ServiceConnection? = null
     private var bound = false

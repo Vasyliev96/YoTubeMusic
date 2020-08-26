@@ -1,42 +1,21 @@
 package vasyliev.android.yotubemusic
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import vasyliev.android.yotubemusic.db.MusicListData
-import vasyliev.android.yotubemusic.db.YoRepository
-import vasyliev.android.yotubemusic.db.YoTubeSongData
+import vasyliev.android.yotubemusic.db.*
+import java.util.concurrent.Executors
 
 class SecondActivityViewModel : ViewModel() {
+
+    private var executor = Executors.newSingleThreadExecutor()
     var currentArtist: String? = null
     var currentGenre: String? = null
-    var songListLiveData = YoRepository.getSongs()
-    fun requestMusic() {
-        when {
-            currentArtist != null && currentGenre != null -> {
-                songListLiveData = YoRepository.getSongsByGenreAndArtist(
-                    currentGenre!!,
-                    currentArtist!!
-                )
-            }
-            currentArtist != null -> {
-                songListLiveData = YoRepository.getSongsByArtist(currentArtist!!)
-            }
-            currentGenre != null -> {
-                songListLiveData = YoRepository.getSongsByGenre(currentGenre!!)
-            }
-            else -> {
-                songListLiveData = YoRepository.getSongs()
-            }
-        }
-    }
-    //val artists = YoRepository.getArtists()
-    //val genres = YoRepository.getGenres()
-
-    private lateinit var yoStorage: YoStorage
-    val yoTubeMusicData = mutableListOf<YoTubeSongData>()
+    var songListLiveData: LiveData<List<YoTubeSongData>>? = null
 
     fun loadMusic() {
         val music = MusicListData()
         var int = 0
+        val myContentResolver = MyContentResolver()
 
         music.rawSoundId.forEach { item ->
             val yoTubeSong = YoTubeSongData()
@@ -44,10 +23,17 @@ class SecondActivityViewModel : ViewModel() {
             yoTubeSong.songName = music.songName[int]
             yoTubeSong.artistsName = "Author ${int % 4 + 1}"
             yoTubeSong.genre = "Genre ${int % 3 + 1}"
-            YoRepository.addSong(yoTubeSong)
+
+            executor.execute { myContentResolver.addMusic(yoTubeSong) }
+
             int += 1
         }
     }
 
+    fun getMusic() {
+        executor.execute {
+            songListLiveData = MyContentResolver().getMusic(currentArtist, currentGenre)
+        }
+    }
 
 }

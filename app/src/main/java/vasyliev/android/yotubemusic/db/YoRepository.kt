@@ -8,8 +8,8 @@ import java.util.concurrent.Executors
 
 private const val DATABASE_NAME = "yo-tube-music-data"
 
-object YoRepository {
 
+object YoRepository {
     private lateinit var yoTubeDB: YoTubeDB
     private lateinit var yoTubeDAO: YoTubeDAO
     private val executor = Executors.newSingleThreadExecutor()
@@ -23,11 +23,14 @@ object YoRepository {
         yoTubeDAO = yoTubeDB.yoTubeDAO()
     }
 
-    fun getSongs(): LiveData<List<YoTubeSongData>> = yoTubeDAO.getSongs()
+    //fun getSongs(): LiveData<List<YoTubeSongData>> = yoTubeDAO.getSongs()
 
     fun getSong(id: UUID): LiveData<YoTubeSongData?> = yoTubeDAO.getSong(id)
+    /*
     fun getSongsByArtist(artistName: String): LiveData<List<YoTubeSongData>> =
         yoTubeDAO.getSongsByArtist(artistName)
+
+
 
     fun getSongsByGenre(genre: String): LiveData<List<YoTubeSongData>> =
         yoTubeDAO.getSongsByGenre(genre)
@@ -42,5 +45,7 @@ object YoRepository {
             yoTubeDAO.addSong(user)
         }
     }
+
+ */
 
 }

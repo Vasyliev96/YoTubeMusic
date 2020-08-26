@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_search.*
+import vasyliev.android.yotubemusic.db.MyContentResolver
 import vasyliev.android.yotubemusic.db.YoTubeSongData
 
 private const val PREF_FIRST_TIME = "isAppFirstTimeLaunched"
@@ -41,7 +42,10 @@ class SecondActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
         setSpinner()
+        MyContentResolver.context = this
+
         val defSong = getSharedPreferences(PREF_FIRST_TIME, MODE_PRIVATE)
+
         if (defSong.getBoolean("booleanFirstTime", true)) {
             secondActivityViewModel.loadMusic()
             getSharedPreferences(PREF_FIRST_TIME, MODE_PRIVATE).edit().apply {
@@ -50,6 +54,7 @@ class SecondActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
             }
         }
 
+        secondActivityViewModel.getMusic()
         yoTubeMusicRecyclerView = findViewById(R.id.recyclerViewYoTubeMusic)
         yoTubeMusicRecyclerView.layoutManager = LinearLayoutManager(this)
         secondActivityAdapter =
@@ -59,7 +64,7 @@ class SecondActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
 
     override fun onStart() {
         super.onStart()
-        secondActivityViewModel.songListLiveData.observe(
+        secondActivityViewModel.songListLiveData?.observe(
             this,
             { songs ->
                 songs?.let {
@@ -69,22 +74,31 @@ class SecondActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
         )
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        MyContentResolver.context = null
+    }
+
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         if (parent != null) {
             if (parent == spinnerArtists) {
                 if (position == 0) {
                     secondActivityViewModel.currentArtist = null
+                    //secondActivityViewModel.getMusic(this)
                 } else {
                     secondActivityViewModel.currentArtist =
                         parent.getItemAtPosition(position).toString()
+                    //secondActivityViewModel.getMusic(this)
                 }
                 updateObserver()
             } else {
                 if (position == 0) {
                     secondActivityViewModel.currentGenre = null
+                    //secondActivityViewModel.getMusic(this)
                 } else {
                     secondActivityViewModel.currentGenre =
                         parent.getItemAtPosition(position).toString()
+                    //secondActivityViewModel.getMusic(this)
                 }
                 updateObserver()
             }
@@ -110,9 +124,10 @@ class SecondActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
     }
 
     private fun updateObserver() {
-        secondActivityViewModel.requestMusic()
-        secondActivityViewModel.songListLiveData.removeObservers(this)
-        secondActivityViewModel.songListLiveData.observe(
+        //secondActivityViewModel.requestMusic()
+        secondActivityViewModel.getMusic()
+        secondActivityViewModel.songListLiveData?.removeObservers(this)
+        secondActivityViewModel.songListLiveData?.observe(
             this,
             { songs ->
                 songs?.let {
