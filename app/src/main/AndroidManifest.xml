@@ -5,6 +5,7 @@
     <permission
         android:name="vasyliev.android.yotubemusic.PRIVATE"
         android:protectionLevel="signature" />
+
     <uses-permission android:name="vasyliev.android.yotubemusic.PRIVATE" />
 
     <application
@@ -15,6 +16,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".SecondActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -24,10 +26,15 @@
             </intent-filter>
         </activity>
 
+        <provider
+            android:name=".db.MyContentProvider"
+            android:authorities="vasyliev.android.yotubemusic.db.MyContentProvider"
+            android:enabled="true"
+            android:exported="true" />
+
         <service
             android:name=".MainActivityService"
-            android:enabled="true" >
-        </service>
+            android:enabled="true" />
     </application>
 
 </manifest>
