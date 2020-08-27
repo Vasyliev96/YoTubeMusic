@@ -31,6 +31,10 @@ class MainActivity : AppCompatActivity() {
             mainActivityViewModel.loadSong(songId)
             stopService(Intent(this@MainActivity, MainActivityService::class.java))
             nullifyPrefTime()
+            getSharedPreferences(PREF_DEFAULT_SONG, MODE_PRIVATE).edit().apply {
+                putString(PREF_SONG_ID, songId.toString())
+                apply()
+            }
         }
     }
 
@@ -145,10 +149,6 @@ class MainActivity : AppCompatActivity() {
             0
         )
         stopService(Intent(this, MainActivityService::class.java))
-        getSharedPreferences(PREF_DEFAULT_SONG, MODE_PRIVATE).edit().apply {
-            putString(PREF_SONG_ID, mainActivityViewModel.songLiveData.value?.id.toString())
-            apply()
-        }
         this.unregisterReceiver(onSongSelected)
     }
 }
