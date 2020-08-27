@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider(this).get(MainActivityViewModel::class.java)
     }
 
-    private val onShowNotification = object : BroadcastReceiver() {
+    private val onSongSelected = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val songId: UUID = UUID.fromString(intent.getStringExtra(MusicListActivity.SONG_ID))
             mainActivityViewModel.loadSong(songId)
@@ -36,7 +36,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val defaultSongID = getSharedPreferences(PREF_DEFAULT_SONG, MODE_PRIVATE).getString(PREF_SONG_ID, null)
+        val defaultSongID =
+            getSharedPreferences(PREF_DEFAULT_SONG, MODE_PRIVATE).getString(PREF_SONG_ID, null)
         if (defaultSongID != null)
             mainActivityViewModel.loadSong(UUID.fromString(defaultSongID))
         setContentView(R.layout.activity_main)
@@ -51,6 +52,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         )
+
         serviceConnection = object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName, binder: IBinder) {
                 bound = true
@@ -60,6 +62,8 @@ class MainActivity : AppCompatActivity() {
                 bound = false
             }
         }
+
+
     }
 
     private fun updateUI() {
@@ -71,7 +75,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         val filter = IntentFilter(MusicListActivity.ACTION_SONG_SELECTED)
-        this.registerReceiver(onShowNotification, filter, MusicListActivity.PERM_PRIVATE, null)
+        this.registerReceiver(onSongSelected, filter, MusicListActivity.PERM_PRIVATE, null)
         buttonSelectSong.setOnClickListener {
             startActivity(Intent(this, MusicListActivity::class.java))
         }
@@ -87,6 +91,7 @@ class MainActivity : AppCompatActivity() {
                 else -> {
                     when (bound) {
                         false -> {
+                            stopService(Intent(this, MainActivityService::class.java))
                             startService(
                                 MainActivityService.newMainActivityServiceIntent(
                                     this,
@@ -125,7 +130,6 @@ class MainActivity : AppCompatActivity() {
             nullifyPrefTime()
         }
     }
-
     fun nullifyPrefTime() {
         getSharedPreferences(PREF_DEFAULT_SONG_TIME, MODE_PRIVATE).edit().apply {
             putInt(PREF_DEFAULT_SONG_TIME, 0)
@@ -145,6 +149,6 @@ class MainActivity : AppCompatActivity() {
             putString(PREF_SONG_ID, mainActivityViewModel.songLiveData.value?.id.toString())
             apply()
         }
-        this.unregisterReceiver(onShowNotification)
+        this.unregisterReceiver(onSongSelected)
     }
 }

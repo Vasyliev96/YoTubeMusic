@@ -10,6 +10,7 @@ import android.os.IBinder
 class MainActivityService : Service() {
     private var songFile: Int? = null
     private var mediaPlayer: MediaPlayer? = null
+
     override fun onBind(intent: Intent?): IBinder? {
         getSharedPreferences(PREF_DEFAULT_SONG_TIME, MODE_PRIVATE).edit().apply {
             putInt("preference default song time", mediaPlayer!!.currentPosition)
@@ -33,7 +34,10 @@ class MainActivityService : Service() {
     }
 
     override fun onStart(intent: Intent?, startid: Int) {
-        val defaultSongTime = getSharedPreferences(PREF_DEFAULT_SONG_TIME, MODE_PRIVATE).getInt(PREF_DEFAULT_SONG_TIME, 0)
+        val defaultSongTime = getSharedPreferences(
+            PREF_DEFAULT_SONG_TIME,
+            MODE_PRIVATE
+        ).getInt(PREF_DEFAULT_SONG_TIME, 0)
         if (intent != null) {
             songFile = intent.getIntExtra(EXTRA_SONG_TO_PLAY, 0)
         }
@@ -48,10 +52,6 @@ class MainActivityService : Service() {
             }
             stopSelf()
         }
-    }
-
-    fun getMediaPlayerCurrentPosition(): Int {
-        return mediaPlayer!!.currentPosition
     }
 
     override fun onDestroy() {
