@@ -126,7 +126,8 @@ class SecondActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
     private fun updateObserver() {
         //secondActivityViewModel.requestMusic()
         secondActivityViewModel.getMusic()
-        secondActivityViewModel.songListLiveData?.removeObservers(this)
+        /*
+            secondActivityViewModel.songListLiveData?.removeObservers(this)
         secondActivityViewModel.songListLiveData?.observe(
             this,
             { songs ->
@@ -135,6 +136,8 @@ class SecondActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
                 }
             }
         )
+
+         */
     }
 
     private fun updateUI(users: List<YoTubeSongData>) {
