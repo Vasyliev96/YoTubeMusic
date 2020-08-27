@@ -1,9 +1,9 @@
-package vasyliev.android.yotubemusic.db
+package vasyliev.android.yotubemusic.musicdatabase
 
 import androidx.room.TypeConverter
 import java.util.*
 
-class YoTubeTC {
+class MusicTypeConverter {
     @TypeConverter
     fun toUUID(uuid: String?): UUID? {
         return UUID.fromString(uuid)

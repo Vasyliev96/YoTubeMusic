@@ -1,52 +1,53 @@
-package vasyliev.android.yotubemusic.db
+package vasyliev.android.yotubemusic.contentprovider
 
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import vasyliev.android.yotubemusic.musicdatabase.SongData
 import java.util.*
 
-class MyContentResolver {
-    private val myContentResolver: ContentResolver? = context?.contentResolver
-    fun addMusic(music: YoTubeSongData) {
+class MusicContentResolver {
 
+    private val myContentResolver: ContentResolver? = context?.contentResolver
+
+    fun addMusic(music: SongData) {
         val values = ContentValues()
         values.apply {
-            put("id", music.id.toString())
-            put("songName", music.songName)
-            put("artistsName", music.artistsName)
-            put("genre", music.genre)
-            put("filePath", music.filePath)
+            put(SongData.ID, music.id.toString())
+            put(SongData.SONG_NAME, music.songName)
+            put(SongData.AUTHOR_NAME, music.author)
+            put(SongData.GENRE, music.genre)
+            put(SongData.RAW_RES_ID, music.rawResId)
         }
-        myContentResolver?.insert(MyContentProvider.CONTENT_URI, values)
+        myContentResolver?.insert(MusicContentProvider.CONTENT_URI, values)
     }
 
-    fun getMusic(artistName: String?, genre: String?): List<YoTubeSongData> {
+    fun getMusic(artistName: String?, genre: String?): List<SongData> {
+        val music = mutableListOf<SongData>()
         val projection = arrayOf(
-            YoTubeSongData.ID,
-            YoTubeSongData.SONG_NAME,
-            YoTubeSongData.ARTIST_NAME,
-            YoTubeSongData.GENRE,
-            YoTubeSongData.FILE_PATH
+            SongData.ID,
+            SongData.SONG_NAME,
+            SongData.AUTHOR_NAME,
+            SongData.GENRE,
+            SongData.RAW_RES_ID
         )
-        var uri: Uri = MyContentProvider.CONTENT_URI
+        var uri: Uri = MusicContentProvider.CONTENT_URI
         var selection: String? = null
         var selectionArgs: Array<String>? = emptyArray()
         if (artistName != null && genre != null) {
-            selection = YoTubeSongData.ARTIST_NAME + YoTubeSongData.GENRE
+            selection = SongData.AUTHOR_NAME + SongData.GENRE
             selectionArgs = arrayOf(artistName, genre)
-            uri = MyContentProvider.CONTENT_SELECTION_URI
+            uri = MusicContentProvider.CONTENT_SELECTION_URI
         } else if (artistName != null) {
-            selection = YoTubeSongData.ARTIST_NAME
+            selection = SongData.AUTHOR_NAME
             selectionArgs = arrayOf(artistName)
-            uri = MyContentProvider.CONTENT_SELECTION_URI
+            uri = MusicContentProvider.CONTENT_SELECTION_URI
         } else if (genre != null) {
-            selection = YoTubeSongData.GENRE
+            selection = SongData.GENRE
             selectionArgs = arrayOf(genre)
-            uri = MyContentProvider.CONTENT_SELECTION_URI
+            uri = MusicContentProvider.CONTENT_SELECTION_URI
         }
         val cursor: Cursor? = myContentResolver?.query(
             uri,
@@ -55,13 +56,11 @@ class MyContentResolver {
             selectionArgs,
             null
         )
-        val music = mutableListOf<YoTubeSongData>()
-
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 cursor.moveToFirst()
                 do {
-                    music += YoTubeSongData(
+                    music += SongData(
                         UUID.fromString(cursor.getString(0)),
                         cursor.getString(1),
                         cursor.getString(2),
@@ -72,7 +71,6 @@ class MyContentResolver {
                 cursor.close()
             }
         }
-
         return music
     }
 

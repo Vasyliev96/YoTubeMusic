@@ -7,15 +7,18 @@ import android.os.IBinder
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.activity_main.*
-import vasyliev.android.yotubemusic.db.YoTubeSongData
+import vasyliev.android.yotubemusic.musicdatabase.SongData
+import vasyliev.android.yotubemusic.activitymusiclist.MusicListActivity
+import vasyliev.android.yotubemusic.service.MainActivityService
 import java.util.*
 
-private const val PREF_DEFAULT_SONG = "prefDefSong"
-private const val PREF_DEFAULT_SONG_TIME = "prefDefSongTime"
+private const val PREF_DEFAULT_SONG = "preference default song"
+private const val PREF_DEFAULT_SONG_TIME = "preference default song time"
+private const val PREF_SONG_ID = "preference song id"
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var songData: YoTubeSongData
+    private lateinit var songData: SongData
     private var serviceConnection: ServiceConnection? = null
     private var bound = false
     private val mainActivityViewModel: MainActivityViewModel by lazy {
@@ -24,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 
     private val onShowNotification = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            val songId: UUID = UUID.fromString(intent.getStringExtra(SecondActivity.SONG_ID))
+            val songId: UUID = UUID.fromString(intent.getStringExtra(MusicListActivity.SONG_ID))
             mainActivityViewModel.loadSong(songId)
             stopService(Intent(this@MainActivity, MainActivityService::class.java))
             nullifyPrefTime()
@@ -33,18 +36,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val defSong = getSharedPreferences(PREF_DEFAULT_SONG, MODE_PRIVATE)
-        val defSongFile = defSong.getString("songFile", null)
-        if (defSongFile != null)
-            mainActivityViewModel.loadSong(UUID.fromString(defSongFile))
+        val defaultSongID = getSharedPreferences(PREF_DEFAULT_SONG, MODE_PRIVATE).getString(PREF_SONG_ID, null)
+        if (defaultSongID != null)
+            mainActivityViewModel.loadSong(UUID.fromString(defaultSongID))
         setContentView(R.layout.activity_main)
-        songData = YoTubeSongData()
+        songData = SongData()
         mainActivityViewModel.songLiveData.observe(
             this,
             { song ->
                 song?.let {
                     songData = song
-                    mainActivityViewModel.currentSongFilepath = songData.filePath
+                    mainActivityViewModel.currentSongFilepath = songData.rawResId
                     updateUI()
                 }
             }
@@ -62,21 +64,25 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateUI() {
         textViewSongName.text = songData.songName
-        textViewArtist.text = songData.artistsName
+        textViewAuthor.text = songData.author
         textViewGenre.text = songData.genre
     }
 
     override fun onStart() {
         super.onStart()
-        val filter = IntentFilter(SecondActivity.ACTION_SONG_SELECTED)
-        this.registerReceiver(onShowNotification, filter, SecondActivity.PERM_PRIVATE, null)
-        buttonChooseArtist.setOnClickListener {
-            startActivity(Intent(this, SecondActivity::class.java))
+        val filter = IntentFilter(MusicListActivity.ACTION_SONG_SELECTED)
+        this.registerReceiver(onShowNotification, filter, MusicListActivity.PERM_PRIVATE, null)
+        buttonSelectSong.setOnClickListener {
+            startActivity(Intent(this, MusicListActivity::class.java))
         }
-        buttonPlayMusic.setOnClickListener {
+        buttonPlaySong.setOnClickListener {
             when (mainActivityViewModel.currentSongFilepath) {
                 null -> {
-                    Toast.makeText(this, "No music to play", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.button_play_song_toast_text),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 else -> {
                     when (bound) {
@@ -96,12 +102,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        buttonPauseMusic.setOnClickListener {
+        buttonPauseSong.setOnClickListener {
             when (bound) {
                 true -> {
                     Toast.makeText(
                         this,
-                        "Already paused",
+                        getString(R.string.button_pause_song_toast_text),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -114,15 +120,15 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        buttonStopMusic.setOnClickListener {
+        buttonStopSong.setOnClickListener {
             stopService(Intent(this, MainActivityService::class.java))
             nullifyPrefTime()
         }
     }
 
-    fun nullifyPrefTime(){
+    fun nullifyPrefTime() {
         getSharedPreferences(PREF_DEFAULT_SONG_TIME, MODE_PRIVATE).edit().apply {
-            putInt("songTime", 0)
+            putInt(PREF_DEFAULT_SONG_TIME, 0)
             apply()
         }
     }
@@ -135,9 +141,8 @@ class MainActivity : AppCompatActivity() {
             0
         )
         stopService(Intent(this, MainActivityService::class.java))
-        val defSongPref = getSharedPreferences(PREF_DEFAULT_SONG, MODE_PRIVATE)
-        defSongPref.edit().apply {
-            putString("songFile", mainActivityViewModel.songLiveData.value?.id.toString())
+        getSharedPreferences(PREF_DEFAULT_SONG, MODE_PRIVATE).edit().apply {
+            putString(PREF_SONG_ID, mainActivityViewModel.songLiveData.value?.id.toString())
             apply()
         }
         this.unregisterReceiver(onShowNotification)

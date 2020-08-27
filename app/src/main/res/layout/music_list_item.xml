@@ -5,38 +5,35 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/textViewSongName"
+        android:id="@+id/listItemTextViewSongName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:hint="Song Name"
-        android:text="Some Song Name"
+        android:hint="@string/list_item_text_view_song_hint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textViewArtist"
+        android:id="@+id/listItemTextViewAuthor"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:hint="Artist Name"
-        android:text="Some Artist Name"
+        android:hint="@string/list_item_text_view_author_hint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewSongName" />
+        app:layout_constraintTop_toBottomOf="@+id/listItemTextViewSongName" />
 
     <TextView
-        android:id="@+id/textViewGere"
+        android:id="@+id/listItemTextViewGenre"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:hint="Genre"
-        android:text="Genre"
+        android:hint="@string/list_item_text_view_genre_hint"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewArtist" />
+        app:layout_constraintTop_toBottomOf="@+id/listItemTextViewAuthor" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

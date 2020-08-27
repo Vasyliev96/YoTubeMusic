@@ -1,9 +1,9 @@
-package vasyliev.android.yotubemusic.db
+package vasyliev.android.yotubemusic.musicdatabase
 
 import vasyliev.android.yotubemusic.R
 
-data class MusicListData(
-    val rawSoundId: Array<Int> = arrayOf(
+data class MusicFilesData(
+    val rawSongId: Array<Int> = arrayOf(
         R.raw.blackpink_ddu_du_ddu_du,
         R.raw.cjipie,
         R.raw.eh,
@@ -66,16 +66,16 @@ data class MusicListData(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as MusicListData
+        other as MusicFilesData
 
-        if (!rawSoundId.contentEquals(other.rawSoundId)) return false
+        if (!rawSongId.contentEquals(other.rawSongId)) return false
         if (!songName.contentEquals(other.songName)) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = rawSoundId.contentHashCode()
+        var result = rawSongId.contentHashCode()
         result = 31 * result + songName.contentHashCode()
         return result
     }

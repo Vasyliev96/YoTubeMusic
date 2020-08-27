@@ -1,11 +1,14 @@
-package vasyliev.android.yotubemusic.db
+package vasyliev.android.yotubemusic.contentprovider
 
 import android.content.*
 import android.database.Cursor
 import android.net.Uri
 import androidx.room.Room
+import vasyliev.android.yotubemusic.musicdatabase.MusicDao
+import vasyliev.android.yotubemusic.musicdatabase.MusicDB
+import vasyliev.android.yotubemusic.musicdatabase.SongData
 
-class MyContentProvider : ContentProvider() {
+class MusicContentProvider : ContentProvider() {
 
     override fun delete(
         uri: Uri, selection: String?,
@@ -23,8 +26,8 @@ class MyContentProvider : ContentProvider() {
         val id: Long
         when (uriType) {
             ID_MUSIC_DATA -> {
-                id = yoTubeDAO.addSong(
-                    YoTubeSongData.fromContentValues(
+                id = musicDao.addSong(
+                    SongData.fromContentValues(
                         values
                     )
                 )
@@ -47,27 +50,27 @@ class MyContentProvider : ContentProvider() {
         val cursor: Cursor
         when (uriType) {
             ID_MUSIC_DATA -> {
-                cursor = yoTubeDAO.getSongs()
+                cursor = musicDao.getMusic()
                 if (context != null) {
                     cursor.setNotificationUri(context!!.contentResolver, uri)
                     return cursor
                 }
             }
-            ID_MUSIC_DATA_ITEM -> {
-                if (selection == YoTubeSongData.ARTIST_NAME + YoTubeSongData.GENRE) {
+            ID_MUSIC_DATA_WITH_SELECTION -> {
+                if (selection == SongData.AUTHOR_NAME + SongData.GENRE) {
                     if (selectionArgs != null) {
                         cursor =
-                            yoTubeDAO.getSongsByGenreAndArtist(selectionArgs[1], selectionArgs[0])
+                            musicDao.getMusicByGenreAndAuthor(selectionArgs[1], selectionArgs[0])
                         return cursor
                     }
-                } else if (selection == YoTubeSongData.ARTIST_NAME) {
+                } else if (selection == SongData.AUTHOR_NAME) {
                     if (selectionArgs != null) {
-                        cursor = yoTubeDAO.getSongsByArtist(selectionArgs[0])
+                        cursor = musicDao.getMusicByAuthor(selectionArgs[0])
                         return cursor
                     }
-                } else if (selection == YoTubeSongData.GENRE) {
+                } else if (selection == SongData.GENRE) {
                     if (selectionArgs != null) {
-                        cursor = yoTubeDAO.getSongsByGenre(selectionArgs[0])
+                        cursor = musicDao.getMusicByGenre(selectionArgs[0])
                         return cursor
                     }
                 }
@@ -84,32 +87,33 @@ class MyContentProvider : ContentProvider() {
     }
 
     companion object {
-        private const val AUTHORITY = "vasyliev.android.yotubemusic.db.MyContentProvider"
-        private const val DATABASE_NAME = "yo-tube-music-data"
-        private const val MUSIC_TABLE_NAME = "yotubesongdata"
+        private const val AUTHORITY =
+            "vasyliev.android.yotubemusic.contentprovider.MusicContentProvider"
+        private const val DATABASE_NAME = "song-data"
+        private const val MUSIC_TABLE_NAME = "songdata"
         private const val WITH_SELECTION = "withSelection"
         private const val ID_MUSIC_DATA = 1
-        private const val ID_MUSIC_DATA_ITEM = 2
+        private const val ID_MUSIC_DATA_WITH_SELECTION = 2
 
         val CONTENT_URI: Uri = Uri.parse("content://$AUTHORITY/$MUSIC_TABLE_NAME")
         val CONTENT_SELECTION_URI: Uri =
             Uri.parse("content://$AUTHORITY/$MUSIC_TABLE_NAME/$WITH_SELECTION")
-
-        private lateinit var yoTubeDB: YoTubeDB
-        private lateinit var yoTubeDAO: YoTubeDAO
         val uriMatcher = UriMatcher(UriMatcher.NO_MATCH).apply {
             addURI(AUTHORITY, MUSIC_TABLE_NAME, ID_MUSIC_DATA)
-            addURI(AUTHORITY, "$MUSIC_TABLE_NAME/$WITH_SELECTION", ID_MUSIC_DATA_ITEM)
+            addURI(AUTHORITY, "$MUSIC_TABLE_NAME/$WITH_SELECTION", ID_MUSIC_DATA_WITH_SELECTION)
         }
 
+        private lateinit var musicDB: MusicDB
+        private lateinit var musicDao: MusicDao
+
         fun initialize(context: Context) {
-            yoTubeDB = Room.databaseBuilder(
+            musicDB = Room.databaseBuilder(
                 context.applicationContext,
-                YoTubeDB::
+                MusicDB::
                 class.java,
                 DATABASE_NAME
             ).build()
-            yoTubeDAO = yoTubeDB.yoTubeDAO()
+            musicDao = musicDB.musicDao()
         }
     }
 }

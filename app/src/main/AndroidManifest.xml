@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".SecondActivity" />
+        <activity android:name=".activitymusiclist.MusicListActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,13 +27,13 @@
         </activity>
 
         <provider
-            android:name=".db.MyContentProvider"
-            android:authorities="vasyliev.android.yotubemusic.db.MyContentProvider"
+            android:name=".contentprovider.MusicContentProvider"
+            android:authorities="vasyliev.android.yotubemusic.contentprovider.MusicContentProvider"
             android:enabled="true"
             android:exported="true" />
 
         <service
-            android:name=".MainActivityService"
+            android:name=".service.MainActivityService"
             android:enabled="true" />
     </application>
 
