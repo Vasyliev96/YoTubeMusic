@@ -1,7 +1,7 @@
 package vasyliev.android.yotubemusic
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import kotlinx.coroutines.Dispatchers
 import vasyliev.android.yotubemusic.db.*
 import java.util.concurrent.Executors
 
@@ -10,7 +10,15 @@ class SecondActivityViewModel : ViewModel() {
     private var executor = Executors.newSingleThreadExecutor()
     var currentArtist: String? = null
     var currentGenre: String? = null
-    var songListLiveData: LiveData<List<YoTubeSongData>>? = null
+    private var currentLiveData = MutableLiveData(listOf(currentArtist, currentGenre))
+    var songListLiveData: LiveData<List<YoTubeSongData>>? =
+        Transformations.switchMap(currentLiveData) { param ->
+            liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
+                emit(
+                    MyContentResolver().getMusic(param[0], param[1])
+                )
+            }
+        }
 
     fun loadMusic() {
         val music = MusicListData()
@@ -31,9 +39,8 @@ class SecondActivityViewModel : ViewModel() {
     }
 
     fun getMusic() {
-        executor.execute {
-            songListLiveData = MyContentResolver().getMusic(currentArtist, currentGenre)
-        }
+        currentLiveData.value = listOf(currentArtist, currentGenre)
+        //executor.execute { songListLiveData = MyContentResolver().getMusic(currentArtist, currentGenre) }
     }
 
 }

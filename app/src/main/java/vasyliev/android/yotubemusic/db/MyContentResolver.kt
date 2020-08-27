@@ -24,7 +24,7 @@ class MyContentResolver {
         myContentResolver?.insert(MyContentProvider.CONTENT_URI, values)
     }
 
-    fun getMusic(artistName: String?, genre: String?): LiveData<List<YoTubeSongData>> {
+    fun getMusic(artistName: String?, genre: String?): List<YoTubeSongData> {
         val projection = arrayOf(
             YoTubeSongData.ID,
             YoTubeSongData.SONG_NAME,
@@ -73,7 +73,7 @@ class MyContentResolver {
             }
         }
 
-        return MutableLiveData(music)
+        return music
     }
 
     companion object {
