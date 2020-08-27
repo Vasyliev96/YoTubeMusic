@@ -1,13 +1,13 @@
 package vasyliev.android.yotubemusic
 
 import android.app.Application
-import vasyliev.android.yotubemusic.db.MyContentProvider
-import vasyliev.android.yotubemusic.db.YoRepository
+import vasyliev.android.yotubemusic.contentprovider.MusicContentProvider
+import vasyliev.android.yotubemusic.musicdatabase.MusicRepository
 
 class YoTubeMusicApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        YoRepository.initialize(this)
-        MyContentProvider.initialize(this)
+        MusicRepository.initialize(this)
+        MusicContentProvider.initialize(this)
     }
 }

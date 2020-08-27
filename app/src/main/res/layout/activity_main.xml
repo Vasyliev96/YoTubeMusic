@@ -12,18 +12,18 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:gravity="center"
-        android:text="Song Name"
+        android:text="@string/text_view_song_name_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textViewArtist"
+        android:id="@+id/textViewAuthor"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:gravity="center"
-        android:text="Artist"
+        android:text="@string/text_view_author_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewSongName" />
@@ -34,63 +34,63 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:gravity="center"
-        android:text="Genre"
+        android:text="@string/text_view_genre_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewArtist" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewAuthor" />
 
     <Button
-        android:id="@+id/buttonChooseArtist"
+        android:id="@+id/buttonSelectSong"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="32dp"
-        android:text="Choose Artist"
-        app:layout_constraintBottom_toTopOf="@id/progressBarPlayMusicProgress"
+        android:text="@string/button_select_song_text"
+        app:layout_constraintBottom_toTopOf="@id/progressBarSongTime"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <ProgressBar
-        android:id="@+id/progressBarPlayMusicProgress"
+        android:id="@+id/progressBarSongTime"
         style="@android:style/Widget.Material.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:progress="66"
-        app:layout_constraintBottom_toTopOf="@+id/buttonPauseMusic"
+        app:layout_constraintBottom_toTopOf="@+id/buttonPauseSong"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/buttonPlayMusic"
+        android:id="@+id/buttonPlaySong"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginBottom="32dp"
         android:drawableStart="@drawable/ic_main_button_play"
-        android:text="Play"
+        android:text="@string/button_play_song_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/buttonPauseMusic"
+        android:id="@+id/buttonPauseSong"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
         android:drawableStart="@drawable/ic_main_button_pause"
-        android:text="Pause"
+        android:text="@string/button_pause_song_text"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/buttonStopMusic"
-        app:layout_constraintStart_toEndOf="@+id/buttonPlayMusic" />
+        app:layout_constraintEnd_toStartOf="@+id/buttonStopSong"
+        app:layout_constraintStart_toEndOf="@+id/buttonPlaySong" />
 
     <Button
-        android:id="@+id/buttonStopMusic"
+        android:id="@+id/buttonStopSong"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="32dp"
         android:drawableStart="@drawable/ic_main_button_stop"
-        android:text="Stop"
+        android:text="@string/button_stop_song_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

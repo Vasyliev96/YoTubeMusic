@@ -1,23 +1,31 @@
 <resources>
     <string name="app_name">Yo Tube Music</string>
-    <string-array name="artists_array">
-        <item>Artist1</item>
-        <item>Artist2</item>
-        <item>Artist3</item>
-        <item>Artist4</item>
-        <item>Artist5</item>
-        <item>Artist6</item>
-        <item>Artist7</item>
-        <item>Artist8</item>
+    <string name="music_list_starting_for_the_first_time">is music list starting for the first time</string>
+    <string name="on_nothing_selected_toast_text">nothing selected</string>
+    <string name="button_pause_song_toast_text">already paused</string>
+    <string name="button_play_song_toast_text">no music to play</string>
+    <string name="text_view_song_name_text">Song name</string>
+    <string name="text_view_author_text">Author</string>
+    <string name="text_view_genre_text">Genre</string>
+    <string name="button_select_song_text">Select Song</string>
+    <string name="button_play_song_text">Play</string>
+    <string name="button_pause_song_text">Pause</string>
+    <string name="button_stop_song_text">Stop</string>
+    <string name="list_item_text_view_song_hint">Song name</string>
+    <string name="list_item_text_view_author_hint">Author</string>
+    <string name="list_item_text_view_genre_hint">Genre</string>
+
+    <string-array name="authors_array">
+        <item>all authors</item>
+        <item>Author 1</item>
+        <item>Author 2</item>
+        <item>Author 3</item>
+        <item>Author 4</item>
     </string-array>
     <string-array name="genres_array">
-        <item>Genre1</item>
-        <item>Genre2</item>
-        <item>Genre3</item>
-        <item>Genre4</item>
-        <item>Genre5</item>
-        <item>Genre6</item>
-        <item>Genre7</item>
-        <item>Genre8</item>
+        <item>all genres</item>
+        <item>Genre 1</item>
+        <item>Genre 2</item>
+        <item>Genre 3</item>
     </string-array>
 </resources>
