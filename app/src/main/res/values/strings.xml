@@ -3,7 +3,7 @@
     <string name="music_list_starting_for_the_first_time">is music list starting for the first time</string>
     <string name="on_nothing_selected_toast_text">nothing selected</string>
     <string name="button_pause_song_toast_text">already paused</string>
-    <string name="button_play_song_toast_text">no music to play</string>
+    <string name="no_song_toast_text">no song</string>
     <string name="text_view_song_name_text">Song name</string>
     <string name="text_view_author_text">Author</string>
     <string name="text_view_genre_text">Genre</string>

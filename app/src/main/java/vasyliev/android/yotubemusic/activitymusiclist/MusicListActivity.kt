@@ -7,19 +7,16 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_music_list.*
 import vasyliev.android.yotubemusic.R
-import vasyliev.android.yotubemusic.contentprovider.MusicContentResolver
 import vasyliev.android.yotubemusic.musicdatabase.SongData
 
 class MusicListActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener,
     MusicListAdapter.CallbackItemClickListener {
-
-    private lateinit var authors: Array<String>
-    private lateinit var genres: Array<String>
     private lateinit var musicListAdapter: MusicListAdapter
     private lateinit var musicListRecyclerView: RecyclerView
     private val musicListViewModel: MusicListViewModel by lazy {
@@ -29,23 +26,12 @@ class MusicListActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_music_list)
-        MusicContentResolver.context = this
-        authors = resources.getStringArray(R.array.authors_array)
-        genres = resources.getStringArray(R.array.genres_array)
-
-        if (getSharedPreferences(
-                PREFERENCE_FIRST_START,
-                MODE_PRIVATE
-            ).getBoolean(getString(R.string.music_list_starting_for_the_first_time), true)
-        ) {
-            musicListViewModel.uploadMusicToDatabase()
-            getSharedPreferences(PREFERENCE_FIRST_START, MODE_PRIVATE).edit().apply {
-                putBoolean(getString(R.string.music_list_starting_for_the_first_time), false)
-                apply()
-            }
+        musicListViewModel.apply {
+            authors = resources.getStringArray(R.array.authors_array)
+            genres = resources.getStringArray(R.array.genres_array)
+            uploadMusicToDatabase(this@MusicListActivity)
+            getMusic()
         }
-
-        musicListViewModel.getMusic()
         musicListRecyclerView = findViewById(R.id.recyclerViewMusic)
         musicListRecyclerView.layoutManager = LinearLayoutManager(this)
         musicListAdapter = MusicListAdapter(emptyList(), this)
@@ -55,19 +41,13 @@ class MusicListActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
     override fun onStart() {
         super.onStart()
         setSpinner()
+        val musicObserver:Observer<List<SongData>> =
+            Observer<List<SongData>> { updatedList -> updateUI(updatedList) }
+
         musicListViewModel.musicListLiveData?.observe(
             this,
-            { songs ->
-                songs?.let {
-                    updateUI(songs)
-                }
-            }
+            musicObserver
         )
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        MusicContentResolver.context = null
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -76,8 +56,7 @@ class MusicListActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
                 if (position == 0) {
                     musicListViewModel.currentAuthor = null
                 } else {
-                    musicListViewModel.currentAuthor =
-                        parent.getItemAtPosition(position).toString()
+                    musicListViewModel.currentAuthor = parent.getItemAtPosition(position).toString()
                 }
             } else {
                 if (position == 0) {
@@ -99,7 +78,7 @@ class MusicListActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         ).show()
     }
 
-    override fun onItemClick(view: View, position: Int) {
+    override fun onItemClick(position: Int) {
         sendBroadcast(
             Intent(ACTION_SONG_SELECTED).putExtra(
                 SONG_ID,
@@ -120,7 +99,7 @@ class MusicListActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         ArrayAdapter(
             this,
             android.R.layout.simple_spinner_item,
-            authors
+            musicListViewModel.authors
         ).also { adapter ->
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinnerAuthors.adapter = adapter
@@ -128,7 +107,7 @@ class MusicListActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         ArrayAdapter(
             this,
             android.R.layout.simple_spinner_item,
-            genres
+            musicListViewModel.genres
         ).also { adapter ->
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinnerGenres.adapter = adapter
@@ -139,6 +118,5 @@ class MusicListActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         const val SONG_ID = "song_id"
         const val PERM_PRIVATE = "vasyliev.android.yotubemusic.PRIVATE"
         const val ACTION_SONG_SELECTED = "vasyliev.android.yotubemusic.song_selected"
-        const val PREFERENCE_FIRST_START = "is music list starting for the first time"
     }
 }

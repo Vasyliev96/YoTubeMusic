@@ -9,8 +9,8 @@ private const val DATABASE_NAME = "song-data"
 
 object MusicRepository {
 
-    private lateinit var musicDB: MusicDB
-    private lateinit var musicDao: MusicDao
+    lateinit var musicDB: MusicDB
+    lateinit var musicDao: MusicDao
 
     fun initialize(context: Context) {
         musicDB = Room.databaseBuilder(
