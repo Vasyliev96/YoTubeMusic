@@ -1,18 +1,15 @@
 package vasyliev.android.yotubemusic
 
-import android.view.View
+import android.app.Application
 import android.widget.Toast
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
-import kotlinx.android.synthetic.main.activity_main.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.*
 import vasyliev.android.yotubemusic.musicdatabase.MusicRepository
 import vasyliev.android.yotubemusic.musicdatabase.SongData
 import vasyliev.android.yotubemusic.service.MusicPlayerService
 import java.util.*
 
-class MainActivityViewModel : ViewModel() {
+class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
 
     lateinit var songData: SongData
     var musicPlayerService: MusicPlayerService? = null
@@ -27,24 +24,46 @@ class MainActivityViewModel : ViewModel() {
         songIdLiveData.value = songId
     }
 
-    fun action(activity: MainActivity, view: View) {
+    fun getDefaultSong() {
+        val defaultSongID = getApplication<Application>().getSharedPreferences(
+            MainActivity.PREF_DEFAULT_SONG,
+            AppCompatActivity.MODE_PRIVATE
+        ).getString(MainActivity.PREF_SONG_ID, null)
+        if (defaultSongID != null) {
+            songIdLiveData.value = UUID.fromString(defaultSongID)
+        }
+    }
+
+    fun setDefaultSong(defaultSongId: String?) {
+        if (defaultSongId != null) {
+            getApplication<Application>().getSharedPreferences(
+                MainActivity.PREF_DEFAULT_SONG,
+                AppCompatActivity.MODE_PRIVATE
+            ).edit().apply {
+                putString(MainActivity.PREF_SONG_ID, defaultSongId)
+                apply()
+            }
+        }
+    }
+
+    fun action(button: String) {
         when (currentSongFilepath) {
             null -> {
                 Toast.makeText(
-                    activity,
-                    activity.getString(R.string.no_song_toast_text),
+                    getApplication(),
+                    "no song",
                     Toast.LENGTH_SHORT
                 ).show()
             }
             else -> {
-                when (view) {
-                    activity.buttonPlaySong -> {
+                when (button) {
+                    MainActivity.BUTTON_PLAY_SONG -> {
                         musicPlayerService?.playSong(currentSongFilepath!!)
                     }
-                    activity.buttonPauseSong -> {
+                    MainActivity.BUTTON_PAUSE_SONG -> {
                         musicPlayerService?.pauseSong()
                     }
-                    activity.buttonStopSong -> {
+                    MainActivity.BUTTON_STOP_SONG -> {
                         musicPlayerService?.stopSong(0)
                     }
                 }

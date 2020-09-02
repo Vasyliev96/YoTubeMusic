@@ -13,10 +13,6 @@ import vasyliev.android.yotubemusic.service.MusicPlayerService
 import vasyliev.android.yotubemusic.service.MusicPlayerService.MusicPlayerServiceBinder
 import java.util.*
 
-
-const val PREF_DEFAULT_SONG = "preference default song"
-const val PREF_SONG_ID = "preference song id"
-
 class MainActivity : AppCompatActivity(), ServiceConnection {
 
     private val mainActivityViewModel: MainActivityViewModel by lazy {
@@ -26,23 +22,24 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
     private val onSongSelected = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             mainActivityViewModel.musicPlayerService?.stopSong(0)
-            val songId: UUID = UUID.fromString(intent.getStringExtra(MusicListActivity.SONG_ID))
-            mainActivityViewModel.loadSong(songId)
-            getSharedPreferences(PREF_DEFAULT_SONG, MODE_PRIVATE).edit().apply {
-                putString(PREF_SONG_ID, songId.toString())
-                apply()
-            }
+            val songId = intent.getStringExtra(MusicListActivity.SONG_ID)
+            mainActivityViewModel.loadSong(UUID.fromString(songId))
+            mainActivityViewModel.setDefaultSong(songId)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mainActivityViewModel.getDefaultSong()
+        /*
         val defaultSongID =
             getSharedPreferences(PREF_DEFAULT_SONG, MODE_PRIVATE).getString(PREF_SONG_ID, null)
 
         if (defaultSongID != null) {
             mainActivityViewModel.loadSong(UUID.fromString(defaultSongID))
         }
+
+         */
 
         registerReceiver(
             onSongSelected,
@@ -60,7 +57,8 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
             { song ->
                 song?.let {
                     mainActivityViewModel.songData = song
-                    mainActivityViewModel.currentSongFilepath = mainActivityViewModel.songData.rawResId
+                    mainActivityViewModel.currentSongFilepath =
+                        mainActivityViewModel.songData.rawResId
                     updateUI()
                 }
             }
@@ -79,13 +77,13 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
             startActivity(Intent(this, MusicListActivity::class.java))
         }
         buttonPlaySong.setOnClickListener {
-            mainActivityViewModel.action(this, it)
+            mainActivityViewModel.action(BUTTON_PLAY_SONG)
         }
         buttonPauseSong.setOnClickListener {
-            mainActivityViewModel.action(this, it)
+            mainActivityViewModel.action(BUTTON_PAUSE_SONG)
         }
         buttonStopSong.setOnClickListener {
-            mainActivityViewModel.action(this, it)
+            mainActivityViewModel.action(BUTTON_STOP_SONG)
         }
     }
 
@@ -101,5 +99,14 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {
+        mainActivityViewModel.musicPlayerService = null
+    }
+
+    companion object {
+        const val PREF_DEFAULT_SONG = "preference default song"
+        const val PREF_SONG_ID = "preference song id"
+        const val BUTTON_PLAY_SONG = "play"
+        const val BUTTON_PAUSE_SONG = "pause"
+        const val BUTTON_STOP_SONG = "stop"
     }
 }
