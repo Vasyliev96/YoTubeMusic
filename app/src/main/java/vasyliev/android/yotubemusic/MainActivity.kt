@@ -31,15 +31,6 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainActivityViewModel.getDefaultSong()
-        /*
-        val defaultSongID =
-            getSharedPreferences(PREF_DEFAULT_SONG, MODE_PRIVATE).getString(PREF_SONG_ID, null)
-
-        if (defaultSongID != null) {
-            mainActivityViewModel.loadSong(UUID.fromString(defaultSongID))
-        }
-
-         */
 
         registerReceiver(
             onSongSelected,
